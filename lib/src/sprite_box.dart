@@ -236,12 +236,13 @@ class SpriteBox extends RenderBox {
     }
 
     // Pass the event down to nodes that were hit by the pointerdown
-    List<Node> targets = entry.nodeTargets;
+    List<Node> targets = entry.nodeTargets ?? <Node>[];
     for (Node node in targets) {
       // Check if this event should be dispatched
       if (node.handleMultiplePointers || event.pointer == node._handlingPointer) {
         // Dispatch event
-        bool consumedEvent = node.handleEvent(new SpriteBoxEvent(globalToLocal(event.position), event.runtimeType, event.pointer));
+        bool consumedEvent = node.handleEvent(new SpriteBoxEvent(globalToLocal(event.position), event, event.pointer));
+                 
         if (consumedEvent == null || consumedEvent)
           break;
       }
@@ -256,7 +257,7 @@ class SpriteBox extends RenderBox {
 
   @override
   bool hitTest(HitTestResult result, { Offset position }) {
-    result.add(new _SpriteBoxHitTestEntry(this, position));
+    result.add(_SpriteBoxHitTestEntry(this, position));
     return true;
   }
 
@@ -538,7 +539,7 @@ class SpriteBoxEvent {
   ///     if (event.type == PointerDownEvent) {
   ///       // Do something!
   ///     }
-  final Type type;
+  final PointerEvent type;
 
   /// The id of the pointer. Each pointer on the screen will have a unique pointer id.
   ///
