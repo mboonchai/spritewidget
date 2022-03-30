@@ -131,7 +131,7 @@ class TexturedLinePainter {
     List<Offset> vertices = <Offset>[];
     List<int> indices = <int>[];
     List<Color> verticeColors = <Color>[];
-    List<Offset>? textureCoordinates;
+    late List<Offset> textureCoordinates;
     double? textureTop;
     double? textureBottom;
     List<double>? stops;
@@ -193,8 +193,8 @@ class TexturedLinePainter {
         textureBottom = texture!.frame.bottom;
 
         double xPos = _xPosForStop(stops![i]);
-        textureCoordinates!.add(new Offset(xPos, textureTop));
-        textureCoordinates!.add(new Offset(xPos, textureBottom));
+        textureCoordinates.add(new Offset(xPos, textureTop));
+        textureCoordinates.add(new Offset(xPos, textureBottom));
       }
 
       // Update last values

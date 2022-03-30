@@ -164,7 +164,7 @@ class ConstraintPositionToNode extends Constraint {
     if (targetNode.parent == node.parent) {
       targetPosition = targetNode.position;
     } else {
-      targetPosition = node.parent.convertPointFromNode(Offset.zero, targetNode);
+      targetPosition = node.parent!.convertPointFromNode(Offset.zero, targetNode);
     }
 
     if (offset != null)

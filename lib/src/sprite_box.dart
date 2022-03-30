@@ -128,29 +128,29 @@ class SpriteBox extends RenderBox {
   /// The root node of the node tree that is rendered by this box.
   ///
   ///     var rootNode = mySpriteBox.rootNode;
-  NodeWithSize get rootNode => _rootNode;
+  NodeWithSize? get rootNode => _rootNode;
 
-  late NodeWithSize _rootNode;
+  NodeWithSize? _rootNode;
 
-  set rootNode (NodeWithSize value) {
+  set rootNode (NodeWithSize? value) {
     if (value == _rootNode) return;
 
     // Ensure that the root node has a size
     assert(_transformMode == SpriteBoxTransformMode.nativePoints
-      || value.size.width > 0);
+      || value!.size.width > 0);
     assert(_transformMode == SpriteBoxTransformMode.nativePoints
-      || value.size.height > 0);
+      || value!.size.height > 0);
 
     // Remove sprite box references
     if (_rootNode != null)
-      _removeSpriteBoxReference(_rootNode);
+      _removeSpriteBoxReference(_rootNode!);
 
     // Update the value
     _rootNode = value;
     _motionControllers = null;
 
     // Add new references
-    _addSpriteBoxReference(_rootNode);
+    _addSpriteBoxReference(_rootNode!);
     markNeedsLayout();
   }
 
@@ -158,7 +158,7 @@ class SpriteBox extends RenderBox {
   void performLayout() {
     size = constraints.biggest;
     _invalidateTransformMatrix();
-    _callSpriteBoxPerformedLayout(_rootNode);
+    _callSpriteBoxPerformedLayout(_rootNode!);
     _initialized = true;
   }
 
@@ -213,7 +213,7 @@ class SpriteBox extends RenderBox {
       // Build list of event targets
       if (_eventTargets == null) {
         _eventTargets = <Node>[];
-        _addEventTargets(_rootNode, _eventTargets!);
+        _addEventTargets(_rootNode!, _eventTargets!);
       }
 
       // Find the once that are hit by the pointer
@@ -285,8 +285,8 @@ class SpriteBox extends RenderBox {
     double offsetX = 0.0;
     double offsetY = 0.0;
 
-    double systemWidth = rootNode.size.width;
-    double systemHeight = rootNode.size.height;
+    double systemWidth = rootNode!.size.width;
+    double systemHeight = rootNode!.size.height;
 
     switch(_transformMode) {
       case SpriteBoxTransformMode.stretch:
@@ -319,13 +319,13 @@ class SpriteBox extends RenderBox {
         scaleX = size.width/systemWidth;
         scaleY = scaleX;
         systemHeight = size.height/scaleX;
-        rootNode.size = new Size(systemWidth, systemHeight);
+        rootNode!.size = new Size(systemWidth, systemHeight);
         break;
       case SpriteBoxTransformMode.fixedHeight:
         scaleY = size.height/systemHeight;
         scaleX = scaleY;
         systemWidth = size.width/scaleY;
-        rootNode.size = new Size(systemWidth, systemHeight);
+        rootNode!.size = new Size(systemWidth, systemHeight);
         break;
       case SpriteBoxTransformMode.nativePoints:
         systemWidth = size.width;
@@ -348,7 +348,7 @@ class SpriteBox extends RenderBox {
   void _invalidateTransformMatrix() {
     _visibleArea = null;
     _transformMatrix = null;
-    _rootNode._invalidateToBoxTransformMatrix();
+    _rootNode!._invalidateToBoxTransformMatrix();
   }
 
   @override
@@ -361,7 +361,7 @@ class SpriteBox extends RenderBox {
       ..transform(transformMatrix.storage);
 
     // Draw the sprite tree
-    _rootNode._visit(canvas);
+    _rootNode!._visit(canvas);
 
     canvas.restore();
   }
@@ -393,7 +393,7 @@ class SpriteBox extends RenderBox {
     if (_initialized) {
       _callConstraintsPreUpdate(delta);
       _runActions(delta);
-      _callUpdate(_rootNode, delta);
+      _callUpdate(_rootNode!, delta);
       _callConstraintsConstrain(delta);
     }
 
@@ -415,7 +415,7 @@ class SpriteBox extends RenderBox {
 
   void _rebuildActionControllersAndPhysicsNodes() {
     _motionControllers = <MotionController>[];
-    _addActionControllersAndPhysicsNodes(_rootNode);
+    _addActionControllersAndPhysicsNodes(_rootNode!);
   }
 
   void _addActionControllersAndPhysicsNodes(Node node) {
@@ -440,7 +440,7 @@ class SpriteBox extends RenderBox {
   void _callConstraintsPreUpdate(double dt) {
     if (_constrainedNodes == null) {
       _constrainedNodes = <Node>[];
-      _addConstrainedNodes(_rootNode, _constrainedNodes!);
+      _addConstrainedNodes(_rootNode!, _constrainedNodes!);
     }
 
     for (Node node in _constrainedNodes!) {
@@ -453,7 +453,7 @@ class SpriteBox extends RenderBox {
   void _callConstraintsConstrain(double dt) {
     if (_constrainedNodes == null) {
       _constrainedNodes = <Node>[];
-      _addConstrainedNodes(_rootNode, _constrainedNodes!);
+      _addConstrainedNodes(_rootNode!, _constrainedNodes!);
     }
 
     for (Node node in _constrainedNodes!) {
@@ -494,7 +494,7 @@ class SpriteBox extends RenderBox {
     List<Node> nodes = <Node>[];
 
     // Traverse the render tree and find objects at the position
-    _addNodesAtPosition(_rootNode, position, nodes);
+    _addNodesAtPosition(_rootNode!, position, nodes);
 
     return nodes;
   }

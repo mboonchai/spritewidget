@@ -132,7 +132,7 @@ class Node {
   ///
   ///     // Hide the parent
   ///     myNode.parent.visible = false;
-  Node get parent => _parent!;
+  Node? get parent => _parent;
 
   /// The rotation of this node in degrees.
   ///
@@ -256,7 +256,7 @@ class Node {
   bool _assertNonCircularAssignment(Node child) {
     Node node = this;
     while (node.parent != null) {
-      node = node.parent;
+      node = node.parent!;
       assert(node != child); // indicates we are about to create a cycle
     }
     return true;
