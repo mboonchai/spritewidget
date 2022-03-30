@@ -191,7 +191,7 @@ class TexturedLinePainter {
         // Texture coordinate points
         double xPos = _xPosForStop(stops![i]);
         textureCoordinates!.add(new Offset(xPos, textureTop!));
-        textureCoordinates!.add(new Offset(xPos, textureBottom!));
+        textureCoordinates.add(new Offset(xPos, textureBottom!));
       }
 
       // Update last values
