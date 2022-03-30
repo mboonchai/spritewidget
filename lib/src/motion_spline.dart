@@ -32,7 +32,7 @@ class MotionSpline extends MotionInterval {
   /// callback for setting the positions, [points] define the spline, and
   /// [duration] is the time for the motion to complete. Optionally a [curve]
   /// can be used for easing.
-  MotionSpline(this.setter, this.points, double duration, [Curve curve]) : super(duration, curve) {
+  MotionSpline(this.setter, this.points, double duration, [Curve? curve]) : super(duration, curve!) {
     _dt = 1.0 / (points.length - 1.0);
   }
 
@@ -45,7 +45,7 @@ class MotionSpline extends MotionInterval {
   /// The tension of the spline, defines the roundness of the curve.
   double tension = 0.5;
 
-  double _dt;
+  double? _dt;
 
   @override
   void update(double t) {
@@ -59,8 +59,8 @@ class MotionSpline extends MotionInterval {
       p = points.length - 1;
       lt = 1.0;
     } else {
-      p = (t / _dt).floor();
-      lt = (t - _dt * p) / _dt;
+      p = (t / _dt!).floor();
+      lt = (t - _dt! * p) / _dt!;
     }
 
     Offset p0 = points[(p - 1).clamp(0, points.length - 1)];

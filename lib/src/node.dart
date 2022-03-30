@@ -31,16 +31,16 @@ class Node {
 
   // Member variables
 
-  SpriteBox _spriteBox;
-  Node _parent;
+  SpriteBox? _spriteBox;
+  Node? _parent;
 
   Offset _position = Offset.zero;
   double _rotation = 0.0;
 
-  Matrix4 _transformMatrix = new Matrix4.identity();
-  Matrix4 _transformMatrixInverse;
-  Matrix4 _transformMatrixNodeToBox;
-  Matrix4 _transformMatrixBoxToNode;
+  Matrix4? _transformMatrix = new Matrix4.identity();
+   Matrix4? _transformMatrixInverse;
+   Matrix4? _transformMatrixNodeToBox;
+   Matrix4? _transformMatrixBoxToNode;
 
   double _scaleX = 1.0;
   double _scaleY = 1.0;
@@ -52,7 +52,7 @@ class Node {
   bool visible = true;
 
   double _zPosition = 0.0;
-  int _addedOrder;
+  int? _addedOrder;
   int _childrenLastAddedOrder = 0;
   bool _childrenNeedSorting = false;
 
@@ -73,11 +73,11 @@ class Node {
   ///       handleMultiplePointers = true;
   ///     }
   bool handleMultiplePointers = false;
-  int _handlingPointer;
+  int? _handlingPointer;
 
   List<Node> _children = <Node>[];
 
-  MotionController _motions;
+  MotionController? _motions;
 
   /// The [MotionController] associated with this node.
   ///
@@ -85,25 +85,25 @@ class Node {
   MotionController get motions {
     if (_motions == null) {
       _motions = new MotionController();
-      if (_spriteBox != null) _spriteBox._motionControllers = null;
+      if (_spriteBox != null) _spriteBox!._motionControllers = null;
     }
-    return _motions;
+    return _motions!;
   }
 
   @Deprecated('actions has been renamed to motions')
   MotionController get actions => motions;
 
-  List<Constraint> _constraints;
+  List<Constraint>? _constraints;
 
   /// A [List] of [Constraint]s that will be applied to the node.
   /// The constraints are applied after the [update] method has been called.
   List<Constraint> get constraints {
-    return _constraints;
+    return _constraints!;
   }
 
   set constraints(List<Constraint> constraints) {
     _constraints = constraints;
-    if (_spriteBox != null) _spriteBox._constrainedNodes = null;
+    if (_spriteBox != null) _spriteBox?._constrainedNodes = null;
   }
 
   /// Called to apply the [constraints] to the node. Normally, this method is
@@ -112,7 +112,7 @@ class Node {
   void applyConstraints(double dt) {
     if (_constraints == null) return;
 
-    for (Constraint constraint in _constraints) {
+    for (Constraint constraint in _constraints!) {
       constraint.constrain(this, dt);
     }
   }
@@ -126,13 +126,13 @@ class Node {
   ///
   ///     // Get the transformMode of the sprite box
   ///     SpriteBoxTransformMode transformMode = myNode.spriteBox.transformMode;
-  SpriteBox get spriteBox => _spriteBox;
+  SpriteBox get spriteBox => _spriteBox!;
 
   /// The parent of this node, or null if it doesn't have a parent.
   ///
   ///     // Hide the parent
   ///     myNode.parent.visible = false;
-  Node get parent => _parent;
+  Node get parent => _parent!;
 
   /// The rotation of this node in degrees.
   ///
@@ -195,7 +195,7 @@ class Node {
     assert(zPosition != null);
     _zPosition = zPosition;
     if (_parent != null) {
-      _parent._childrenNeedSorting = true;
+      _parent!._childrenNeedSorting = true;
     }
   }
 
@@ -280,7 +280,7 @@ class Node {
     child._spriteBox = this._spriteBox;
     _childrenLastAddedOrder += 1;
     child._addedOrder = _childrenLastAddedOrder;
-    if (_spriteBox != null) _spriteBox._registerNode(child);
+    if (_spriteBox != null) _spriteBox!._registerNode(child);
   }
 
   /// Removes a child from this node.
@@ -291,7 +291,7 @@ class Node {
     if (_children.remove(child)) {
       child._parent = null;
       child._spriteBox = null;
-      if (_spriteBox != null) _spriteBox._deregisterNode(child);
+      if (_spriteBox != null) _spriteBox!._deregisterNode(child);
     }
   }
 
@@ -300,7 +300,7 @@ class Node {
   ///     removeFromParent();
   void removeFromParent() {
     assert(_parent != null);
-    _parent.removeChild(this);
+    _parent!.removeChild(this);
   }
 
   /// Removes all children of this node.
@@ -313,7 +313,7 @@ class Node {
     }
     _children = <Node>[];
     _childrenNeedSorting = false;
-    if (_spriteBox != null) _spriteBox._deregisterNode(null);
+    if (_spriteBox != null) _spriteBox!._deregisterNode(null);
   }
 
   void _sortChildren() {
@@ -321,7 +321,7 @@ class Node {
     if (_childrenNeedSorting) {
       _children.sort((Node a, Node b) {
         if (a._zPosition == b._zPosition) {
-          return a._addedOrder - b._addedOrder;
+          return a._addedOrder! - b._addedOrder!;
         }
         else if (a._zPosition > b._zPosition) {
           return 1;
@@ -345,7 +345,7 @@ class Node {
     if (_transformMatrix == null) {
       _transformMatrix = computeTransformMatrix();
     }
-    return _transformMatrix;
+    return _transformMatrix!;
   }
 
   /// Computes the transformation matrix of this node. This method can be
@@ -411,40 +411,40 @@ class Node {
   Matrix4 _nodeToBoxMatrix() {
     assert(_spriteBox != null);
     if (_transformMatrixNodeToBox != null) {
-      return _transformMatrixNodeToBox;
+      return _transformMatrixNodeToBox!;
     }
 
     if (_parent == null) {
       // Base case, we are at the top
-      assert(this == _spriteBox.rootNode);
-      _transformMatrixNodeToBox = _spriteBox.transformMatrix.clone()..multiply(transformMatrix);
+      assert(this == _spriteBox!.rootNode);
+      _transformMatrixNodeToBox = _spriteBox!.transformMatrix.clone()..multiply(transformMatrix);
     }
     else {
-      _transformMatrixNodeToBox = _parent._nodeToBoxMatrix().clone()..multiply(transformMatrix);
+      _transformMatrixNodeToBox = _parent!._nodeToBoxMatrix().clone()..multiply(transformMatrix);
     }
-    return _transformMatrixNodeToBox;
+    return _transformMatrixNodeToBox!;
   }
 
   Matrix4 _boxToNodeMatrix() {
     assert(_spriteBox != null);
 
     if (_transformMatrixBoxToNode != null) {
-      return _transformMatrixBoxToNode;
+      return _transformMatrixBoxToNode!;
     }
 
     _transformMatrixBoxToNode = new Matrix4.copy(_nodeToBoxMatrix());
-    _transformMatrixBoxToNode.invert();
+    _transformMatrixBoxToNode!.invert();
 
-    return _transformMatrixBoxToNode;
+    return _transformMatrixBoxToNode!;
   }
 
   /// The inverse transform matrix used by this node.
   Matrix4 get inverseTransformMatrix {
     if (_transformMatrixInverse == null) {
       _transformMatrixInverse = new Matrix4.copy(transformMatrix);
-      _transformMatrixInverse.invert();
+      _transformMatrixInverse!.invert();
     }
-    return _transformMatrixInverse;
+    return _transformMatrixInverse!;
   }
 
   /// Converts a point from the coordinate system of the [SpriteBox] to the local coordinate system of the node.
@@ -612,7 +612,7 @@ class Node {
 
   set userInteractionEnabled(bool userInteractionEnabled) {
     _userInteractionEnabled = userInteractionEnabled;
-    if (_spriteBox != null) _spriteBox._eventTargets = null;
+    if (_spriteBox != null) _spriteBox!._eventTargets = null;
   }
 
   /// Handles an event, such as a pointer (touch or mouse) event.

@@ -24,21 +24,21 @@ class ImageMap {
   Future<ui.Image> loadImage(String url) async {
     ImageStream stream = new AssetImage(url, bundle: _bundle).resolve(ImageConfiguration.empty);
     Completer<ui.Image> completer = new Completer<ui.Image>();
-    ImageStreamListener listener;
+    ImageStreamListener? listener = null;
     listener = new ImageStreamListener(
     (ImageInfo frame, bool synchronousCall) {
       final ui.Image image = frame.image;
       _images[url] = image;
       completer.complete(image);
-      stream.removeListener(listener);
+      stream.removeListener(listener!);
     });
     stream.addListener(listener);
     return completer.future;
   }
 
   /// Returns a preloaded image, given its [url].
-  ui.Image getImage(String url) => _images[url];
+  ui.Image getImage(String url) => _images[url]!;
 
   /// Returns a preloaded image, given its [url].
-  ui.Image operator [](String url) => _images[url];
+  ui.Image operator [](String url) => _images[url]!;
 }

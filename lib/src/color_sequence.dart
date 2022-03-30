@@ -10,10 +10,10 @@ part of spritewidget;
 /// the list. Both lists have the same number of elements.
 class ColorSequence {
   /// List of colors.
-  List<Color> colors;
+  List<Color> colors = <Color>[];
 
   /// List of color stops, normalized values (0.0 to 1.0) and ordered.
-  List<double> colorStops;
+  List<double> colorStops = <double>[];
 
   /// Creates a new color sequence from a list of [colors] and a list of
   /// [colorStops].

@@ -38,9 +38,9 @@ class EffectLine extends Node {
   /// Creates a new EffectLine with the specified parameters. Only the
   /// [texture] parameter is required, all other parameters are optional.
   EffectLine({
-    this.texture,
+    required this.texture,
     this.transferMode: BlendMode.dstOver,
-    List<Offset> points,
+    List<Offset>? points,
     this.widthMode : EffectLineWidthMode.linear,
     this.minWidth: 10.0,
     this.maxWidth: 10.0,
@@ -48,62 +48,63 @@ class EffectLine extends Node {
     this.animationMode: EffectLineAnimationMode.none,
     this.scrollSpeed: 0.1,
     double scrollStart: 0.0,
-    this.fadeDuration,
-    this.fadeAfterDelay,
-    this.textureLoopLength,
+    this.fadeDuration: 0.0,
+    this.fadeAfterDelay: 0.0,
+    this.textureLoopLength: 0.0,
     this.simplify: true,
-    ColorSequence colorSequence
+    ColorSequence? colorSequence
   }) {
     if (points == null)
       this.points = <Offset>[];
     else
       this.points = points;
 
-    _colorSequence = colorSequence;
     if (_colorSequence == null) {
       _colorSequence = new ColorSequence.fromStartAndEndColor(
         const Color(0xffffffff),
         const Color(0xffffffff)
       );
+    } else {
+          _colorSequence = colorSequence!;
     }
 
     _offset = scrollStart;
 
-    _painter = new TexturedLinePainter(points, _colors, _widths, texture);
+    _painter = new TexturedLinePainter(this.points, _colors, _widths, texture);
     _painter.textureLoopLength = textureLoopLength;
   }
 
   /// The texture used to draw the line.
-  final SpriteTexture texture;
+  late final SpriteTexture texture;
 
   /// The transfer mode used to draw the line, default is
   /// [TransferMode.dstOver].
-  final BlendMode transferMode;
+  late final BlendMode transferMode;
 
   /// Mode used to calculate the width of the line.
-  final EffectLineWidthMode widthMode;
+  late final EffectLineWidthMode widthMode;
 
   /// The width of the line at its thinnest point.
-  final double minWidth;
+  late final double minWidth;
 
   /// The width of the line at its thickest point.
-  final double maxWidth;
+  late final double maxWidth;
 
   /// The speed at which the line is growing, defined in points per second.
-  final double widthGrowthSpeed;
+  late final double widthGrowthSpeed;
 
   /// The mode used to animate the texture of the line.
-  final EffectLineAnimationMode animationMode;
+  late final EffectLineAnimationMode animationMode;
 
   /// The speed of which the texture of the line is scrolling. This property
   /// is only used if the [animationMode] is set to
   /// [EffectLineAnimationMode.scroll].
-  final double scrollSpeed;
+  late final double scrollSpeed;
 
   /// Color gradient used to draw the line, from start to finish.
   ColorSequence get colorSequence => _colorSequence;
 
-  ColorSequence _colorSequence;
+  late ColorSequence _colorSequence;
 
   /// List of points that make up the line. Typically, you will only want to
   /// set this at the beginning. Then use [addPoint] to add additional points
@@ -118,29 +119,29 @@ class EffectLine extends Node {
     }
   }
 
-  List<Offset> _points;
+  List<Offset> _points = <Offset>[];
 
-  List<double> _pointAges;
-  List<Color> _colors;
-  List<double> _widths;
+  List<double> _pointAges = <double>[];
+  List<Color> _colors = <Color>[]; 
+  List<double> _widths = <double>[];
 
   /// The time it takes for an added point to fade out. It's total life time is
   /// [fadeDuration] + [fadeAfterDelay].
-  final double fadeDuration;
+  late final double fadeDuration;
 
   /// The time it takes until an added point starts to fade out.
-  final double fadeAfterDelay;
+  late final double fadeAfterDelay;
 
   /// The length, in points, that the texture is stretched to. If the
   /// textureLoopLength is shorter than the line, the texture will be looped.
-  final double textureLoopLength;
+  late final double textureLoopLength;
 
   /// True if the line should be simplified by removing points that are close
   /// to other points. This makes drawing faster, but can result in a slight
   /// jittering effect when points are added.
-  final bool simplify;
+  late final bool simplify;
 
-  TexturedLinePainter _painter;
+  late TexturedLinePainter _painter;
   double _offset = 0.0;
 
   @override

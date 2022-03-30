@@ -23,7 +23,7 @@ abstract class Action {
 /// [MotionInterval] or [MotionInstant] if you need to create a new action
 /// class.
 abstract class Motion {
-  Object _tag;
+  Object? _tag;
   bool _finished = false;
   bool _added = false;
 
@@ -65,7 +65,7 @@ abstract class MotionInterval extends Motion {
   /// The animation curve used to ease the animation.
   ///
   ///     myMotion.curve = bounceOut;
-  Curve curve;
+  Curve? curve;
 
   bool _firstTick = true;
   double _elapsed = 0.0;
@@ -88,7 +88,7 @@ abstract class MotionInterval extends Motion {
     if (curve == null) {
       update(t);
     } else {
-      update(curve.transform(t));
+      update(curve!.transform(t));
     }
 
     if (t >= 1.0) _finished = true;
@@ -169,9 +169,9 @@ class MotionRepeatForever extends Motion {
 /// of the [MotionSequence] with be the sum of the durations of the motions
 /// passed in to the constructor.
 class MotionSequence extends MotionInterval {
-  Motion _a;
-  Motion _b;
-  double _split;
+  Motion? _a;
+  Motion? _b;
+  double? _split;
 
   /// Creates a new motion with the list of motions passed in.
   ///
@@ -189,9 +189,9 @@ class MotionSequence extends MotionInterval {
     }
 
     // Calculate split and duration
-    _duration = _a.duration + _b.duration;
+    _duration = _a!.duration + _b!.duration;
     if (_duration > 0) {
-      _split = _a.duration / _duration;
+      _split = _a!.duration / _duration;
     } else {
       _split = 1.0;
     }
@@ -199,29 +199,29 @@ class MotionSequence extends MotionInterval {
 
   @override
   void update(double t) {
-    if (t < _split) {
+    if (t < _split!) {
       // Play first motion
       double ta;
-      if (_split > 0.0) {
-        ta = (t / _split).clamp(0.0, 1.0);
+      if (_split! > 0.0) {
+        ta = (t / _split!).clamp(0.0, 1.0);
       } else {
         ta = 1.0;
       }
-      _updateWithCurve(_a, ta);
+      _updateWithCurve(_a!, ta);
     } else if (t >= 1.0) {
       // Make sure everything is finished
-      if (!_a._finished) _finish(_a);
-      if (!_b._finished) _finish(_b);
+      if (!_a!._finished) _finish(_a!);
+      if (!_b!._finished) _finish(_b!);
     } else {
       // Play second motion, but first make sure the first has finished
-      if (!_a._finished) _finish(_a);
+      if (!_a!._finished) _finish(_a!);
       double tb;
-      if (_split < 1.0) {
-        tb = (1.0 - (1.0 - t) / (1.0 - _split)).clamp(0.0, 1.0);
+      if (_split! < 1.0) {
+        tb = (1.0 - (1.0 - t) / (1.0 - _split!)).clamp(0.0, 1.0);
       } else {
         tb = 1.0;
       }
-      _updateWithCurve(_b, tb);
+      _updateWithCurve(_b!, tb);
     }
   }
 
@@ -231,7 +231,7 @@ class MotionSequence extends MotionInterval {
       if (motionInterval.curve == null) {
         motion.update(t);
       } else {
-        motion.update(motionInterval.curve.transform(t));
+        motion.update(motionInterval.curve!.transform(t));
       }
     } else {
       motion.update(t);
@@ -250,8 +250,8 @@ class MotionSequence extends MotionInterval {
   @override
   void _reset() {
     super._reset();
-    _a._reset();
-    _b._reset();
+    _a!._reset();
+    _b!._reset();
   }
 }
 
@@ -299,7 +299,7 @@ class MotionGroup extends MotionInterval {
               if (motionInterval.curve == null) {
                 motion.update(ta);
               } else {
-                motion.update(motionInterval.curve.transform(ta));
+                motion.update(motionInterval.curve!.transform(ta));
               }
             } else {
               motion.update(ta);
@@ -398,7 +398,7 @@ class MotionTween<T> extends MotionInterval {
   ///       bounceOut
   ///     );
   ///     myNode.motions.run(myTween);
-  MotionTween(this.setter, this.startVal, this.endVal, double duration, [Curve curve]) : super(duration, curve) {
+  MotionTween(this.setter, this.startVal, this.endVal, double duration, [Curve? curve]) : super(duration, curve) {
     _computeDelta();
   }
 
@@ -488,10 +488,10 @@ class MotionTween<T> extends MotionInterval {
       newVal = (startVal as double) + _delta * t;
     } else if (startVal is Color) {
       // Colors
-      int aNew = ((startVal as Color).alpha + (_delta.alpha * t).toInt()).clamp(0, 255);
-      int rNew = ((startVal as Color).red + (_delta.red * t).toInt()).clamp(0, 255);
-      int gNew = ((startVal as Color).green + (_delta.green * t).toInt()).clamp(0, 255);
-      int bNew = ((startVal as Color).blue + (_delta.blue * t).toInt()).clamp(0, 255);
+      int aNew = ((startVal as Color).alpha + ((_delta.alpha as double) * t).toInt()).clamp(0, 255);
+      int rNew = ((startVal as Color).red + ((_delta.red as double) * t).toInt()).clamp(0, 255);
+      int gNew = ((startVal as Color).green + ((_delta.green as double) * t).toInt()).clamp(0, 255);
+      int bNew = ((startVal as Color).blue + ((_delta.blue as double) * t).toInt()).clamp(0, 255);
       newVal = new Color.fromARGB(aNew, rNew, gNew, bNew);
     } else {
       // Oopses
@@ -517,7 +517,7 @@ class MotionController {
   /// to reference the motion or a set of motions with the same tag.
   ///
   ///     myNode.motions.run(myMotion, "myMotionGroup");
-  void run(Motion motion, [Object tag]) {
+  void run(Motion motion, [Object? tag]) {
     assert(!motion._added);
 
     motion._tag = tag;

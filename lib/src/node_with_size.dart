@@ -12,13 +12,13 @@ class NodeWithSize extends Node {
   /// Changing the size will affect the size of the rendering of the node.
   ///
   ///     myNode.size = new Size(1024.0, 1024.0);
-  Size size;
+  late  Size size;
 
   /// The normalized point which the node is transformed around.
   ///
   ///     // Position myNode from is middle top
   ///     myNode.pivot = new Point(0.5, 0.0);
-  Offset pivot;
+ late  Offset pivot;
 
   /// Creates a new NodeWithSize.
   ///

@@ -81,14 +81,14 @@ class SpriteBox extends RenderBox {
   // Member variables
 
   // Tracking of frame rate and updates
-  Duration _lastTimeStamp;
+  Duration? _lastTimeStamp;
   double _frameRate = 0.0;
 
   /// An instantaneous estimate of the number of frames per second this sprite box is producing.
   double get frameRate => _frameRate;
 
   // Transformation mode
-  SpriteBoxTransformMode _transformMode;
+  SpriteBoxTransformMode? _transformMode;
 
   set transformMode (SpriteBoxTransformMode value) {
     if (value == _transformMode)
@@ -100,26 +100,26 @@ class SpriteBox extends RenderBox {
   }
 
   /// The transform mode used by the [SpriteBox].
-  SpriteBoxTransformMode get transformMode => _transformMode;
+  SpriteBoxTransformMode get transformMode => _transformMode!;
 
   // Cached transformation matrix
-  Matrix4 _transformMatrix;
+  Matrix4? _transformMatrix;
 
-  List<Node> _eventTargets;
+  List<Node>? _eventTargets;
 
-  List<MotionController> _motionControllers;
+  List<MotionController>? _motionControllers;
 
-  List<Node> _constrainedNodes;
+  List<Node>? _constrainedNodes;
 
   /// A rectangle that represents the visible area of the sprite world's
   /// coordinate system.
   Rect get visibleArea {
     if (_visibleArea == null)
       _calcTransformMatrix();
-    return _visibleArea;
+    return _visibleArea!;
   }
 
-  Rect _visibleArea;
+  Rect? _visibleArea;
 
   bool _initialized = false;
 
@@ -130,7 +130,7 @@ class SpriteBox extends RenderBox {
   ///     var rootNode = mySpriteBox.rootNode;
   NodeWithSize get rootNode => _rootNode;
 
-  NodeWithSize _rootNode;
+  late NodeWithSize _rootNode;
 
   set rootNode (NodeWithSize value) {
     if (value == _rootNode) return;
@@ -170,7 +170,7 @@ class SpriteBox extends RenderBox {
     if (node == null || node.constraints != null) _constrainedNodes = null;
   }
 
-  void _deregisterNode(Node node) {
+  void _deregisterNode(Node? node) {
     _motionControllers = null;
     _eventTargets = null;
     if (node == null || node.constraints != null) _constrainedNodes = null;
@@ -213,13 +213,13 @@ class SpriteBox extends RenderBox {
       // Build list of event targets
       if (_eventTargets == null) {
         _eventTargets = <Node>[];
-        _addEventTargets(_rootNode, _eventTargets);
+        _addEventTargets(_rootNode, _eventTargets!);
       }
 
       // Find the once that are hit by the pointer
       List<Node> nodeTargets = <Node>[];
-      for (int i = _eventTargets.length - 1; i >= 0; i--) {
-        Node node = _eventTargets[i];
+      for (int i = _eventTargets!.length - 1; i >= 0; i--) {
+        Node node = _eventTargets![i];
 
         // Check if the node is ready to handle a pointer
         if (node.handleMultiplePointers || node._handlingPointer == null) {
@@ -256,8 +256,8 @@ class SpriteBox extends RenderBox {
   }
 
   @override
-  bool hitTest(HitTestResult result, { Offset position }) {
-    result.add(_SpriteBoxHitTestEntry(this, position));
+  bool hitTest(HitTestResult result, { Offset? position }) {
+    result.add(_SpriteBoxHitTestEntry(this, position!));
     return true;
   }
 
@@ -273,7 +273,7 @@ class SpriteBox extends RenderBox {
     if (_transformMatrix == null) {
       _calcTransformMatrix();
     }
-    return _transformMatrix;
+    return _transformMatrix!;
   }
 
   void _calcTransformMatrix() {
@@ -341,8 +341,8 @@ class SpriteBox extends RenderBox {
                                      systemWidth + offsetX / scaleX,
                                      systemHeight + offsetY / scaleY);
 
-    _transformMatrix.translate(offsetX, offsetY);
-    _transformMatrix.scale(scaleX, scaleY);
+    _transformMatrix!.translate(offsetX, offsetY);
+    _transformMatrix!.scale(scaleX, scaleY);
   }
 
   void _invalidateTransformMatrix() {
@@ -368,14 +368,14 @@ class SpriteBox extends RenderBox {
 
   // Updates
 
-  int _frameCallbackId;
+  int? _frameCallbackId;
 
   void _scheduleTick() {
-    _frameCallbackId = SchedulerBinding.instance.scheduleFrameCallback(_tick);
+    _frameCallbackId = SchedulerBinding.instance!.scheduleFrameCallback(_tick);
   }
 
   void _unscheduleTick() {
-    SchedulerBinding.instance.cancelFrameCallbackWithId(_frameCallbackId);
+    SchedulerBinding.instance!.cancelFrameCallbackWithId(_frameCallbackId!);
   }
 
   void _tick(Duration timeStamp) {
@@ -385,7 +385,7 @@ class SpriteBox extends RenderBox {
     // Calculate delta and frame rate
     if (_lastTimeStamp == null)
       _lastTimeStamp = timeStamp;
-    double delta = (timeStamp - _lastTimeStamp).inMicroseconds.toDouble() / Duration.microsecondsPerSecond;
+    double delta = (timeStamp - _lastTimeStamp!).inMicroseconds.toDouble() / Duration.microsecondsPerSecond;
     _lastTimeStamp = timeStamp;
 
     _frameRate = 1.0 / delta;
@@ -408,7 +408,7 @@ class SpriteBox extends RenderBox {
     if (_motionControllers == null) {
       _rebuildActionControllersAndPhysicsNodes();
     }
-    for (MotionController actions in _motionControllers) {
+    for (MotionController actions in _motionControllers!) {
       actions.step(dt);
     }
   }
@@ -419,7 +419,7 @@ class SpriteBox extends RenderBox {
   }
 
   void _addActionControllersAndPhysicsNodes(Node node) {
-    if (node._motions != null) _motionControllers.add(node._motions);
+    if (node._motions != null) _motionControllers!.add(node._motions!);
 
     for (int i = node.children.length - 1; i >= 0; i--) {
       Node child = node.children[i];
@@ -440,10 +440,10 @@ class SpriteBox extends RenderBox {
   void _callConstraintsPreUpdate(double dt) {
     if (_constrainedNodes == null) {
       _constrainedNodes = <Node>[];
-      _addConstrainedNodes(_rootNode, _constrainedNodes);
+      _addConstrainedNodes(_rootNode, _constrainedNodes!);
     }
 
-    for (Node node in _constrainedNodes) {
+    for (Node node in _constrainedNodes!) {
       for (Constraint constraint in node.constraints) {
         constraint.preUpdate(node, dt);
       }
@@ -453,10 +453,10 @@ class SpriteBox extends RenderBox {
   void _callConstraintsConstrain(double dt) {
     if (_constrainedNodes == null) {
       _constrainedNodes = <Node>[];
-      _addConstrainedNodes(_rootNode, _constrainedNodes);
+      _addConstrainedNodes(_rootNode, _constrainedNodes!);
     }
 
-    for (Node node in _constrainedNodes) {
+    for (Node node in _constrainedNodes!) {
       for (Constraint constraint in node.constraints) {
         constraint.constrain(node, dt);
       }
@@ -464,7 +464,7 @@ class SpriteBox extends RenderBox {
   }
 
   void _addConstrainedNodes(Node node, List<Node> nodes) {
-    if (node._constraints != null && node._constraints.length > 0) {
+    if (node._constraints != null && node._constraints!.length > 0) {
       nodes.add(node);
     }
 
@@ -513,7 +513,7 @@ class SpriteBox extends RenderBox {
 }
 
 class _SpriteBoxHitTestEntry extends BoxHitTestEntry {
-  List<Node> nodeTargets;
+  List<Node>? nodeTargets;
   _SpriteBoxHitTestEntry(RenderBox target, Offset localPosition) : super(target, localPosition);
 }
 

@@ -75,5 +75,5 @@ class SpriteSheet {
   /// Returns a texture by its name.
   ///
   ///     var myTexture = mySpriteSheet["example.png"];
-  SpriteTexture operator [](String fileName) => _textures[fileName];
+  SpriteTexture operator [](String fileName) => _textures[fileName]!;
 }

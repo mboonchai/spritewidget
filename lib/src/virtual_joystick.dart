@@ -34,12 +34,12 @@ class VirtualJoystick extends NodeWithSize {
   bool _isDown = false;
 
 
-  Offset _pointerDownAt;
-  Offset _center;
-  Offset _handlePos;
+  Offset? _pointerDownAt;
+  late Offset _center;
+  late Offset _handlePos;
 
-  Paint _paintHandle;
-  Paint _paintControl;
+  late Paint _paintHandle;
+  late Paint _paintControl;
 
   @override
   bool handleEvent(SpriteBoxEvent event) {
@@ -55,7 +55,7 @@ class VirtualJoystick extends NodeWithSize {
       motions.run(moveToCenter);
       _isDown = false;
     } else if (event.type == PointerMoveEvent) {
-      Offset movedDist = event.boxPosition - _pointerDownAt;
+      Offset movedDist = event.boxPosition - _pointerDownAt!;
 
       _value = new Offset(
         (movedDist.dx / 80.0).clamp(-1.0, 1.0),
