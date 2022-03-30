@@ -189,9 +189,12 @@ class TexturedLinePainter {
 
       if (texture != null) {
         // Texture coordinate points
+        textureTop = texture!.frame.top;
+        textureBottom = texture!.frame.bottom;
+
         double xPos = _xPosForStop(stops![i]);
-        textureCoordinates!.add(new Offset(xPos, textureTop!));
-        textureCoordinates.add(new Offset(xPos, textureBottom!));
+        textureCoordinates!.add(new Offset(xPos, textureTop));
+        textureCoordinates!.add(new Offset(xPos, textureBottom));
       }
 
       // Update last values
